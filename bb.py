@@ -7,7 +7,7 @@ import datetime
 
 site = "https://www.amazon.in/s?k="
 
-#to match
+# to match
 keyword = "biscuit"
 excel = openpyxl.Workbook()
 sheet = excel.active
@@ -17,8 +17,8 @@ sheet.append(
      "Keyword", "Actual price", "Offer price", "Delivery Date", "Page Number", "Item Number"])
 
 
-def soupExtract(site, keyword,brand=0,page=1):
-    if brand !=0:
+def soupExtract(site, keyword, brand=0, page=1):
+    if brand != 0:
         sheet.title = brand
     url = site + keyword + "&page=" + str(page)
     while True:
@@ -30,7 +30,7 @@ def soupExtract(site, keyword,brand=0,page=1):
             break
 
         except Exception as e:
-            print("Retrying...",end =" ")
+            print("Retrying...", end=" ")
     a = soup.find('span', class_='rush-component s-latency-cf-section').find_all('span')
     name = soup.find('span', class_='rush-component s-latency-cf-section').find_all('span',
                                                                                     class_='a-size-base-plus a-color-base a-text-normal')
@@ -76,7 +76,7 @@ def soupExtract(site, keyword,brand=0,page=1):
             di = str(di) + "%"
         except:
             pass
-        #keyword
+        # keyword
         if k.lower() not in name[i].text.lower():
             continue
         if (brand != 0) & (bn != brand):
@@ -84,26 +84,37 @@ def soupExtract(site, keyword,brand=0,page=1):
         rdt.append([pl, dt, ct, bn, n, r, re, di, si, wpg, k, b, p, de, page, i + 1])
         sheet.append([pl, dt, ct, bn, n, r, re, di, si, wpg, k, b, p, de, page, i + 1])
 
-    if page == 1:
-        totalPages = soup.find('span', class_='s-pagination-item s-pagination-disabled').text
+    pager = soup.find('span', {'class': 's-pagination-strip'})
+    print(pager.text[-5])
+    totalpages = int(pager.text[-5])
+    #     print(pager.find('span', class_ = 's-pagination-item s-pagination-disabled'))
+    #     if pager.find('span', class_ = 's-pagination-item s-pagination-disabled'):
+    #         return 1
+    #     else:
+    #         return 0
+    return totalpages
 
-        # totalPages = soup.find('span', class_="s-pagination-item s-pagination-next s-pagination-disabled ").text
-        print(totalPages)
-        return totalPages
-
-
-
-# totalpages = soupExtract(site,'bourbon biscuit','Britannia')
-# for i in range(2,int(totalpages)+1):
-#     soupExtract(site,keyword,i)
-
+#     totalPages = soup.find('span', 'aria-disabled'=='true').text
+#     print(totalPages)
+#     print(rdt)
 
 keywords = ['biscuit']
+# print('Number of keywords ')
+
+c = input()
+a = []
+for i in range(int(c)):
+    a .append(input())
+a = keywords
+# totalpages = soupExtract(site,'cream biscuit')
 for keyword in keywords:
-    totalpages = soupExtract(site, keyword, 'Britannia')
-    for i in range(2, int(totalpages) + 1):
+    totalpages = soupExtract(site, keyword)
+#     for i in range(2, int(totalpages) + 1):
+    i = 1
+    while i!=totalpages:
+        i = i+1
         try:
-            soupExtract(site, keyword, 'Britannia', i)
+            soupExtract(site, keyword, 'Cadbury',i)
         except:
             pass
 excel.save("Data.xlsx")
